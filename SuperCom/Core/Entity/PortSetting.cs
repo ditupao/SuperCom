@@ -26,7 +26,7 @@ namespace SuperCom.Entity
         public const int CLOSE_TIME_OUT = 5;
         public const double DEFAULT_FONTSIZE = 15;
         public const int DEFAULT_WRITE_TIME_OUT = 1000;
-        public const int DEFAULT_SUBCONTRACTING_TIME_OUT = 10;
+        public const int DEFAULT_SUBCONTRACTING_TIME_OUT = 20;
         public const int DEFAULT_READ_TIME_OUT = 2000;
         public const int MIN_TIME_OUT = 0;
         public const int MAX_TIME_OUT = 60 * 60 * 1000;
@@ -40,7 +40,7 @@ namespace SuperCom.Entity
 
         public const int DEFAULT_BAUDRATE = 115200;
         public const int DEFAULT_DATABITS = 8;
-        public const string DEFAULT_ENCODING_STRING = "UTF8";
+        public const string DEFAULT_ENCODING_STRING = "GB2312";
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace SuperCom.Entity
 
         public static List<int> DEFAULT_BAUDRATES = new List<int>()
         {
-            9600,19200,115200,1500000
+            9600,19200,38400,115200,1500000
         };
 
         public static List<int> DEFAULT_DATABITS_LIST = new List<int>()
@@ -69,7 +69,7 @@ namespace SuperCom.Entity
         /// </summary>
         public static List<string> DEFAULT_ENCODINGS = new List<string>()
         {
-            "UTF8","US-ASCII","GB2312","ISO-8859-1"
+            "GB2312","UTF8","US-ASCII","ISO-8859-1"
         };
 
         public static List<string> DEFAULT_PARITIES = new List<string>()
@@ -95,6 +95,7 @@ namespace SuperCom.Entity
         public FlowControls FlowControls { get; set; }
         public string Encoding { get; set; }
 
+        public bool IsPrinter { get; set; }
         #endregion
 
 
@@ -122,6 +123,7 @@ namespace SuperCom.Entity
             portSetting.Parity = DEFAULT_PARITY;
             portSetting.FlowControls = DEFAULT_FLOW_CONTROLS;
             portSetting.Encoding = DEFAULT_ENCODING_STRING;
+            portSetting.IsPrinter = true;
             return portSetting;
         }
     }

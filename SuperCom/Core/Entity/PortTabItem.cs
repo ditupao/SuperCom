@@ -305,6 +305,126 @@ namespace SuperCom.Entity
             ResetEvent.Set();
         }
 
+        private string ProcessPrinterString(byte[] allData)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            List<byte> byteList = new List<byte>();
+
+            for (int i = 0; i < allData.Length; i++)
+            {
+                bool cmdProcessed = false;
+                StringBuilder cmdString = new StringBuilder("");
+
+                if (allData[i] == 0x1b)
+                {
+                    if (i + 1 < allData.Length && allData[i + 1] == 0x40)
+                    {
+                        cmdString.Append("ESC @ 初始化打印机");
+                        i++;
+                        cmdProcessed = true;
+                    }
+                    if (i + 2 < allData.Length && allData[i + 1] == 0x6c)
+                    {
+                        cmdString.Append($"ESC l {allData[i + 2]} 设置左边界");
+                        i += 2;
+                        cmdProcessed = true;
+                    }
+                    if (i + 2 < allData.Length && allData[i + 1] == 0x51)
+                    {
+                        cmdString.Append($"ESC Q {allData[i + 2]} 设置右边界");
+                        i += 2;
+                        cmdProcessed = true;
+                    }
+                    if (i + 2 < allData.Length && allData[i + 1] == 0x55)
+                    {
+                        cmdString.Append($"ESC U {allData[i + 2]} 设置单/双向打印");
+                        i += 2;
+                        cmdProcessed = true;
+                    }
+                    if (i + 2 < allData.Length && allData[i + 1] == 0x2b)
+                    {
+                        cmdString.Append($"ESC + {allData[i + 2]} 设定n/360英寸行间距 ");
+                        i += 2;
+                        cmdProcessed = true;
+                    }
+                }
+                if (allData[i] == 0x1c)
+                {
+                    if (i + 1 < allData.Length && allData[i + 1] == 0x26)
+                    {
+                        cmdString.Append("FS & 设定汉字打印模式");
+                        i++;
+                        cmdProcessed = true;
+                    }
+                    if (i + 1 < allData.Length && allData[i + 1] == 0x14)
+                    {
+                        cmdString.Append("FS DC4 解除单行倍宽打印");
+                        i++;
+                        cmdProcessed = true;
+                    }
+                    if (i + 1 < allData.Length && allData[i + 1] == 0x4b)
+                    {
+                        cmdString.Append($"FS K 设定汉字横向打印");
+                        i += 1;
+                        cmdProcessed = true;
+                    }
+                    if (i + 2 < allData.Length && allData[i + 1] == 0x6b)
+                    {
+                        cmdString.Append($"FS k {allData[i + 2]} 选择汉字字体");
+                        i+=2;
+                        cmdProcessed = true;
+                    }
+                    if (i + 2 < allData.Length && allData[i + 1] == 0x78)
+                    {
+                        cmdString.Append($"FS x {allData[i + 2]} 设定/解除高速打印");
+                        i += 2;
+                        cmdProcessed = true;
+                    }
+                    if (i + 2 < allData.Length && allData[i + 1] == 0x0E)
+                    {
+                        cmdString.Append($"FS SO {allData[i + 2]} 设定单行倍宽打印");
+                        i += 2;
+                        cmdProcessed = true;
+                    }
+                    if (i + 3 < allData.Length && allData[i + 1] == 0x53)
+                    {
+                        cmdString.Append($"FS S {allData[i + 2]},{allData[i + 3]} 设置全角汉字间距");
+                        i += 3;
+                        cmdProcessed = true;
+                    }
+                }
+                if (!cmdProcessed)
+                {
+                    byteList.Add(allData[i]);
+                }
+                else
+                {
+                    if (byteList.Count > 0)
+                    {
+                        sb.Append(SerialPort.Encoding.GetString(byteList.ToArray()));
+                        byteList.Clear();
+                    }
+                    if (SerialPort.ShowEscCommand)
+                    {
+                        sb.AppendLine($"[{cmdString}]");
+                    }
+                }
+            }
+            if (byteList.Count > 0)
+            {
+                sb.Append(SerialPort.Encoding.GetString(byteList.ToArray()));
+                byteList.Clear();
+            }
+            if (SerialPort.HideDuplicateCRLF)
+            {
+                sb.Replace("\n\r", "\r\n");
+                sb.Replace("\r\r", "\r");
+                sb.Replace("\n\n", "\n");
+                sb.Replace("\r\n\r\n", "\r\n");
+            }
+            return sb.ToString();
+        }
 
         /// <summary>
         /// 读串口的 16 进制数据
@@ -352,11 +472,36 @@ namespace SuperCom.Entity
                             SaveHex(allData.ToArray(), HexRecvTime.ToLocalDate());
                         } else {
                             // STR 模式
-                            SaveData(SerialPort.Encoding.GetString(allData.ToArray()), HexRecvTime.ToLocalDate());
+                            //SaveData(SerialPort.Encoding.GetString(allData.ToArray()), HexRecvTime.ToLocalDate());
+                            SaveData(ProcessPrinterString(allData.ToArray()), HexRecvTime.ToLocalDate());
                         }
-
                     });
                 }
+            }
+        }
+
+        public void PrinterTask()
+        {
+            while (_IsClose == false)
+            {
+                if (_IsClose)
+                {
+                    break;
+                }
+                if (SerialPort == null || !SerialPort.IsOpen)
+                    break;
+                try
+                {
+                    byte[] buffer = new byte[256];
+                    Array.Clear(buffer, 0, buffer.Length);
+                    HexRecvTime = DateTime.Now;
+                    SerialPort.Write(buffer, 0, buffer.Length);
+                }
+                catch
+                {
+                    break;
+                }
+                Thread.Sleep(SerialPort.SubcontractingTimeoutValue);
             }
         }
         #endregion
@@ -814,6 +959,11 @@ namespace SuperCom.Entity
         {
             _IsClose = false;
             new Thread(ReadTask).Start();
+            /// 使用txd as dtr，开启thread
+            if (SerialPort.UseTXDAsDTR)
+            {
+                new Thread(PrinterTask).Start();
+            }
         }
     }
 

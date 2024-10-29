@@ -73,6 +73,8 @@
     <sys:String x:Key="ConnectAll">すべてを接続します</sys:String>
     <sys:String x:Key="NewLineMode">銀行と変更モードを入力します</sys:String>
     <sys:String x:Key="SendPrefix">プロンプトプレフィックスを送信します</sys:String>
-
+    <sys:String x:Key="ShowEscCommand">显示Esc命令</sys:String>
+    <sys:String x:Key="HideDuplicateCRLF">隐藏重复换行</sys:String>
+    <sys:String x:Key="UseTXDAsDTR">以TXD为DTR</sys:String>
 
 </ResourceDictionary>

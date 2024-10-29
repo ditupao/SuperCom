@@ -27,6 +27,55 @@ namespace SuperCom.Entity
         private const string COM_PATTERN = @"COM[0-9]+";
         private const string PORT_INFO_SELECT_SQL = "SELECT * FROM Win32_PnPEntity WHERE Caption like '%(COM%'";
 
+        bool showEscCommand = false;
+        bool hideDuplicateCRLF = true;
+        bool useTXDAsDTR = false;
+
+        [Browsable(true)]
+        [DefaultValue(false)]
+        [MonitoringDescription("ShowEscCommand")]
+        public bool ShowEscCommand
+        {
+            get
+            {
+                return showEscCommand;
+            }
+            set
+            {
+                showEscCommand = value;
+            }
+        }
+
+        [Browsable(true)]
+        [DefaultValue(false)]
+        [MonitoringDescription("HideDuplicateCRLF")]
+        public bool HideDuplicateCRLF
+        {
+            get
+            {
+                return hideDuplicateCRLF;
+            }
+            set
+            {
+                hideDuplicateCRLF = value;
+            }
+        }
+
+        [Browsable(false)]
+        [DefaultValue(false)]
+        [MonitoringDescription("UseTXDAsDTR")]
+        public bool UseTXDAsDTR
+        {
+            get
+            {
+                return useTXDAsDTR;
+            }
+            set
+            {
+                useTXDAsDTR = value;
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void RaisePropertyChanged([CallerMemberName] string name = null)
         {
@@ -289,6 +338,9 @@ namespace SuperCom.Entity
                 { "TextFontSize", this.TextFontSize },
                 { "HighLightIndex", this.HighLightIndex },
                 { "DataCheck", JsonUtils.TrySerializeObject(this.DataCheck) },
+                { "ShowEscCommand", this.ShowEscCommand },
+                { "HideDuplicateCRLF", this.HideDuplicateCRLF },
+                { "UseTXDAsDTR" , this.UseTXDAsDTR }
             };
             if (this.Handshake == Handshake.RequestToSend || this.Handshake == Handshake.RequestToSendXOnXOff) {
                 // Handshake 设置为 RequestToSend 或 RequestToSendXOnXOff，则无法访问 RtsEnable
@@ -326,6 +378,10 @@ namespace SuperCom.Entity
                 this.Pinned = dict.GetBool("Pinned", false);
                 this.Hide = dict.GetBool("Hide", false);
                 this.DataCheck = DataCheck.FromJson(dict.GetString("DataCheck", ""));
+
+                this.ShowEscCommand = dict.GetBool("ShowEscCommand", false);
+                this.HideDuplicateCRLF = dict.GetBool("HideDuplicateCRLF", true);
+                this.UseTXDAsDTR = dict.GetBool("UseTXDAsDTR", false);
             }
         }
 
@@ -415,6 +471,9 @@ namespace SuperCom.Entity
             this.StopBits = PortSetting.DEFAULT_STOPBITS;
             this.Parity = PortSetting.DEFAULT_PARITY;
             this.Encoding = PortSetting.DEFAULT_ENCODING;
+            this.ShowEscCommand = false;
+            this.HideDuplicateCRLF = true;
+            this.UseTXDAsDTR = false;
         }
     }
 }

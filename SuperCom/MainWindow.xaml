@@ -1949,12 +1949,63 @@
                                                         </Style>
                                                     </ComboBox.Style>
                                                 </ComboBox>
+                                                <StackPanel
+                                                    Margin="5"
+                                                    Orientation="Horizontal"
+                                                    Tag="{Binding Name}">
+                                                    <TextBlock
+                                                        Width="80"
+                                                        FontSize="12"
+                                                        Style="{StaticResource BaseTextBlock}"
+                                                        Text="{DynamicResource ShowEscCommand}"
+                                                        TextAlignment="Right" />
+                                                    <super:Switch
+                                                        Height="20"
+                                                        Margin="5,0"
+                                                        Background="{DynamicResource Window.Title.Background}"
+                                                        Click="OnPortSettingChanged"
+                                                        IsChecked="{Binding SerialPort.ShowEscCommand, Mode=TwoWay}" />
+                                                </StackPanel>
+                                                <StackPanel
+                                                    Margin="5"
+                                                    Orientation="Horizontal"
+                                                    Tag="{Binding Name}">
+                                                    <TextBlock
+                                                        Width="80"
+                                                        FontSize="12"
+                                                        Style="{StaticResource BaseTextBlock}"
+                                                        Text="{DynamicResource HideDuplicateCRLF}"
+                                                        TextAlignment="Right" />
+                                                    <super:Switch
+                                                        Height="20"
+                                                        Margin="5,0"
+                                                        Background="{DynamicResource Window.Title.Background}"
+                                                        Click="OnPortSettingChanged"
+                                                        IsChecked="{Binding SerialPort.HideDuplicateCRLF, Mode=TwoWay}" />
+                                                </StackPanel>                                                
+                                                <StackPanel
+                                                    Margin="5"
+                                                    Orientation="Horizontal"
+                                                    Tag="{Binding Name}">
+                                                    <TextBlock
+                                                        Width="80"
+                                                        FontSize="12"
+                                                        Style="{StaticResource BaseTextBlock}"
+                                                        Text="{DynamicResource UseTXDAsDTR}"
+                                                        TextAlignment="Right" />
+                                                    <super:Switch
+                                                        Height="20"
+                                                        Margin="5,0"
+                                                        Background="{DynamicResource Window.Title.Background}"
+                                                        Click="OnPortSettingChanged"
+                                                        IsChecked="{Binding SerialPort.UseTXDAsDTR, Mode=TwoWay}" />
+                                                </StackPanel> 
                                                 <Button
                                                     Margin="5"
                                                     VerticalAlignment="Center"
                                                     Click="ShowAdvancedOptions"
                                                     Content="{DynamicResource MorePortSettings}" />
-
+                                                
 
                                                 <TextBlock
                                                     Margin="10,0,5,0"

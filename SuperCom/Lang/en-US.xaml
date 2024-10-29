@@ -73,6 +73,8 @@
     <sys:String x:Key="ConnectAll">Connect All</sys:String>
     <sys:String x:Key="NewLineMode">NewLine Mode</sys:String>
     <sys:String x:Key="SendPrefix">Send Prefix</sys:String>
-
+    <sys:String x:Key="ShowEscCommand">Show Esc Cmd</sys:String>
+    <sys:String x:Key="HideDuplicateCRLF">Hide Dup-CRLF</sys:String>
+    <sys:String x:Key="UseTXDAsDTR">use TXD as DTR</sys:String>
 
 </ResourceDictionary>

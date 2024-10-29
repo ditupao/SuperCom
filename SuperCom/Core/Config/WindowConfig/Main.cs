@@ -111,7 +111,7 @@ namespace SuperCom.Config.WindowConfig
         }
 
 
-        private string _TextFontName = "微软雅黑";
+        private string _TextFontName = "宋体";
         public string TextFontName {
             get { return _TextFontName; }
             set {
